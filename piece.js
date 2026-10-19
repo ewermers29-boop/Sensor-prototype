@@ -13,7 +13,7 @@ addEventListener('resize', resize);
 resize();
 
 function frame() {
-  const { state } = window.sense;
+  const { state, signals } = window.sense;
   const width = innerWidth;
   const height = innerHeight;
   const min = Math.min(width, height);
@@ -72,6 +72,33 @@ function frame() {
       ctx.fillStyle = vignette;
       ctx.fillRect(0, 0, width, height);
     }
+  }
+
+  if (signals.present > 0.2) {
+    const frown = Math.max(signals.mouthFrownLeft || 0, signals.mouthFrownRight || 0);
+    const radius = min * (0.025 + 0.2 * frown);
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    const glow = ctx.createRadialGradient(centerX, centerY, radius * 0.4, centerX, centerY, radius * 2.4);
+    glow.addColorStop(0, 'rgba(242, 239, 233, 0.28)');
+    glow.addColorStop(1, 'rgba(242, 239, 233, 0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius * 2.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    const circle = ctx.createRadialGradient(
+      centerX - radius * 0.3, centerY - radius * 0.35, radius * 0.05,
+      centerX, centerY, radius
+    );
+    circle.addColorStop(0, '#f2efe9');
+    circle.addColorStop(0.65, '#bc806b');
+    circle.addColorStop(1, '#658e9b');
+    ctx.fillStyle = circle;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   requestAnimationFrame(frame);

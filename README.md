@@ -45,6 +45,7 @@ window.sense = {
 - **Focus**: `stillness > 0.8` for 5 seconds. Stillness is measured from nose movement between frames; it reads 0 when no face is in view. The canvas sharpens and gains crisp rings.
 
 The thresholds and hold times are in `table.js`; the visual responses are in `piece.js`.
+The center circle grows with whichever frown score is higher and disappears when no face is detected.
 
 ## Keys
 
