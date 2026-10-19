@@ -41,7 +41,7 @@ window.sense = {
 ## This piece's states
 
 - **Nobody**: `present < 0.2` for 2 seconds. The canvas goes dark.
-- **Sadness**: average `mouthFrownLeft` / `mouthFrownRight` above 0.7 for 3 seconds. The canvas softens, darkens and gains a vignette.
+- **Sadness**: average `mouthFrownLeft` / `mouthFrownRight` above 0.1 for 3 seconds. The canvas softens, darkens and gains a vignette. The original 0.7 threshold was too high to trigger reliably, so it was lowered to 0.1.
 - **Focus**: `stillness > 0.8` for 5 seconds. Stillness is measured from nose movement between frames; it reads 0 when no face is in view. The canvas sharpens and gains crisp rings.
 
 The thresholds and hold times are in `table.js`; the visual responses are in `piece.js`.

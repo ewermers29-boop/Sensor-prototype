@@ -14,7 +14,7 @@ window.TABLE = {
   signals: ['present', 'mouthCurve', 'stillness'],
 
   states: [
-    { name: 'sadness', when: s => s.mouthCurve > 0.7, hold: 3 },
+    { name: 'sadness', when: s => s.mouthCurve > 0.1, hold: 3 },
     { name: 'focus',   when: s => s.stillness > 0.8,  hold: 5 },
     { name: 'nobody',  when: s => s.present < 0.2,    hold: 2 },
   ],
