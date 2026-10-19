@@ -38,16 +38,25 @@ window.sense = {
 2. Add a function with the same name to `SIGNALS` in `sense.js`. It gets one frame's result and returns a number from 0 to 1. There are two patterns in the comments there: one of the 52 named scores from the lab, or geometry from the 478 points.
 3. Use it in a rule in `table.js`. Press **D** to watch the number while you set the threshold. Thresholds that move go in your break log.
 
+## This piece's states
+
+- **Nobody**: `present < 0.2` for 2 seconds. The canvas goes dark.
+- **Sadness**: average `mouthFrownLeft` / `mouthFrownRight` above 0.7 for 3 seconds. The canvas softens, darkens and gains a vignette.
+- **Focus**: `stillness > 0.8` for 5 seconds. Stillness is measured from nose movement between frames; it reads 0 when no face is in view. The canvas sharpens and gains crisp rings.
+
+The thresholds and hold times are in `table.js`; the visual responses are in `piece.js`.
+
 ## Keys
 
 - **D**: the object `piece.js` reads, live
 - **B**: all 52 named scores, to find the one you measured in the Make a Face lab
 - **V**: the camera, small, in the corner
-- **1, 2, 3 …** and the **mouse**: drive the fake sensor before the camera starts
+- **1, 2, 3**: show Sadness, Focus or Nobody in the fake sensor, in that order
+- The **mouse**: sets the first two fake signals (`present` and `mouthCurve`) before the camera starts
 
 ## When Start does nothing useful
 
-If the readout says the face library did not load, the school network is blocking `cdn.jsdelivr.net`. Press **D** and keep going on the fake sensor: the piece reads the same object either way. A new state you add to `table.js` gets a bright colour of its own in `piece.js` until you give it one.
+If the readout says the face library did not load, the school network is blocking `cdn.jsdelivr.net`. Press **D** and keep going on the fake sensor: the piece reads the same object either way.
 
 ## Bench pairs: an Arduino instead of the camera
 

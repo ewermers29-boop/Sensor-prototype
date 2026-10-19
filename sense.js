@@ -34,34 +34,30 @@ const SIGNALS = {
   // missed frame does not count as somebody leaving.
   present: result => (result.faceLandmarks.length > 0 ? 1 : 0),
 
-  // open: the worked signal. jawOpen is one of the 52 scores, already 0 to 1.
-  open: result => score(result, 'jawOpen'),
+  // Average frown score: higher values indicate a downward mouth curve.
+  mouthCurve: result =>
+    (score(result, 'mouthFrownLeft') + score(result, 'mouthFrownRight')) / 2,
 
-  // Your signal goes here. Two patterns to copy:
-  //
-  // A named score from the lab (the B panel shows every name):
-  //   smile: result => (score(result, 'mouthSmileLeft') + score(result, 'mouthSmileRight')) / 2,
-  //
-  // Geometry from the 478 points (x and y run 0 to 1 across the frame):
-  // A number that needs the last frame too, kept in a closure (how little the
-  // nose moved since the previous frame):
-  //   still: (() => {
-  //     let last = null;
-  //     return result => {
-  //       const nose = result.faceLandmarks[0] && result.faceLandmarks[0][1];
-  //       if (!nose) { last = null; return 0; }
-  //       const moved = last ? Math.hypot(nose.x - last.x, nose.y - last.y) : 0;
-  //       last = nose;
-  //       return clamp(1 - moved * 40); // a jump of 1/40 of the frame reads 0
-  //     };
-  //   })(),
-  //
-  //   near: result => {
-  //     const face = result.faceLandmarks[0];
-  //     if (!face) return 0;
-  //     const width = Math.abs(face[454].x - face[234].x); // cheek to cheek
-  //     return clamp((width - 0.15) / 0.35);               // 0.15 far ... 0.5 at the screen
-  //   },
+  // Stillness is the inverse of nose movement between camera frames.
+  stillness: (() => {
+    let last = null;
+    return result => {
+      const nose = result.faceLandmarks[0] && result.faceLandmarks[0][1];
+      if (!nose) {
+        last = null;
+        return 0;
+      }
+      const now = performance.now();
+      if (!last) {
+        last = { x: nose.x, y: nose.y, time: now };
+        return 0;
+      }
+      const elapsed = Math.max(now - last.time, 1);
+      const moved = Math.hypot(nose.x - last.x, nose.y - last.y) * (1000 / 60 / elapsed);
+      last = { x: nose.x, y: nose.y, time: now };
+      return clamp(1 - moved * 40);
+    };
+  })(),
 };
 
 // One of the 52 scores by name, or 0 when no face is in view.

@@ -8,15 +8,14 @@
 // states:  checked top to bottom; the first row whose rule is true wins.
 //          hold is in seconds: how long a rule has to stay true before the state
 //          changes. Without it the piece flickers between two words.
-//          Keep "nobody" last, so it catches everything the other rows miss.
+//          Keep "nobody" last; its rule detects when no face is present.
 
 window.TABLE = {
-  signals: ['present', 'open'],
+  signals: ['present', 'mouthCurve', 'stillness'],
 
   states: [
-    // These three rows are an example. Replace them with your own words.
-    { name: 'open',   when: s => s.present > 0.5 && s.open > 0.4, hold: 0.5 },
-    { name: 'here',   when: s => s.present > 0.5,                 hold: 1 },
-    { name: 'nobody', when: s => s.present < 0.2,                 hold: 2 },
+    { name: 'sadness', when: s => s.mouthCurve > 0.7, hold: 3 },
+    { name: 'focus',   when: s => s.stillness > 0.8,  hold: 5 },
+    { name: 'nobody',  when: s => s.present < 0.2,    hold: 2 },
   ],
 };

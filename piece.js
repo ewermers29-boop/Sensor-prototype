@@ -1,8 +1,6 @@
 // piece.js: reads window.sense inside its own frame loop and answers.
-//
-// What is here now is a gauge: a colour per state and a circle that follows one
-// signal. A gauge proves the sensing works and nothing more. Replace all of it
-// with the piece your State Table describes. Read the object, never the camera.
+// It renders an abstract field whose softness, darkness and detail respond to
+// the state. It reads the sensor object, never the camera.
 
 const canvas = document.querySelector('#piece');
 const ctx = canvas.getContext('2d');
@@ -14,33 +12,66 @@ function resize() {
 addEventListener('resize', resize);
 resize();
 
-const COLORS = { nobody: '#0b0b0d', here: '#1d2a3a', open: '#3a1d2a' };
-
-// A state with no colour above still gets a bright one of its own, picked from
-// its name, so a new row in table.js is visible the moment it fires.
-function colorFor(state) {
-  if (COLORS[state]) return COLORS[state];
-  let hash = 0;
-  for (const ch of state) hash = (hash * 31 + ch.charCodeAt(0)) % 360;
-  return `hsl(${hash}, 85%, 50%)`;
-}
-
 function frame() {
-  const { state, signals, since } = window.sense;
-  const held = performance.now() - since; // ms in this state
+  const { state } = window.sense;
+  const width = innerWidth;
+  const height = innerHeight;
+  const min = Math.min(width, height);
 
-  ctx.fillStyle = colorFor(state);
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  ctx.fillStyle = '#10131a';
+  ctx.fillRect(0, 0, width, height);
 
   if (state !== 'nobody') {
-    const r = Math.min(canvas.width, canvas.height) * (0.05 + 0.35 * (signals.open || 0));
-    const fadeIn = Math.min(1, held / 600);
-    ctx.globalAlpha = fadeIn;
-    ctx.fillStyle = '#f2efe9';
-    ctx.beginPath();
-    ctx.arc(canvas.width / 2, canvas.height / 2, r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalAlpha = 1;
+    const sadness = state === 'sadness';
+    const focus = state === 'focus';
+    const blur = focus ? 1 : sadness ? 22 : 12;
+
+    ctx.save();
+    ctx.filter = `blur(${blur}px)`;
+    const forms = [
+      [width * 0.34, height * 0.42, min * 0.31, '#658e9b'],
+      [width * 0.62, height * 0.39, min * 0.27, '#bc806b'],
+      [width * 0.49, height * 0.66, min * 0.3, '#7773a1'],
+    ];
+    for (const [x, y, radius, color] of forms) {
+      const gradient = ctx.createRadialGradient(x, y, radius * 0.08, x, y, radius);
+      gradient.addColorStop(0, color);
+      gradient.addColorStop(1, 'rgba(16, 19, 26, 0)');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    if (focus) {
+      ctx.strokeStyle = 'rgba(242, 239, 233, 0.6)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(width / 2, height / 2, min * 0.19, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(width / 2, height / 2, min * 0.24, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = '#f2efe9';
+      ctx.beginPath();
+      ctx.arc(width / 2, height / 2, min * 0.012, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    if (sadness) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+      ctx.fillRect(0, 0, width, height);
+      const vignette = ctx.createRadialGradient(
+        width / 2, height / 2, min * 0.12,
+        width / 2, height / 2, min * 0.78
+      );
+      vignette.addColorStop(0, 'rgba(0, 0, 0, 0.05)');
+      vignette.addColorStop(1, 'rgba(0, 0, 0, 0.82)');
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, width, height);
+    }
   }
 
   requestAnimationFrame(frame);
