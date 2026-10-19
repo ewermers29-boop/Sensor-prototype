@@ -34,9 +34,8 @@ const SIGNALS = {
   // missed frame does not count as somebody leaving.
   present: result => (result.faceLandmarks.length > 0 ? 1 : 0),
 
-  // Average frown score: higher values indicate a downward mouth curve.
-  mouthCurve: result =>
-    (score(result, 'mouthFrownLeft') + score(result, 'mouthFrownRight')) / 2,
+  mouthFrownLeft: result => score(result, 'mouthFrownLeft'),
+  mouthFrownRight: result => score(result, 'mouthFrownRight'),
 
   // Stillness is the inverse of nose movement between camera frames.
   stillness: (() => {

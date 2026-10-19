@@ -11,10 +11,14 @@
 //          Keep "nobody" last; its rule detects when no face is present.
 
 window.TABLE = {
-  signals: ['present', 'mouthCurve', 'stillness'],
+  signals: ['present', 'mouthFrownLeft', 'mouthFrownRight', 'stillness'],
 
   states: [
-    { name: 'sadness', when: s => s.mouthCurve > 0.1, hold: 3 },
+    {
+      name: 'sadness',
+      when: s => s.mouthFrownLeft > 0.1 || s.mouthFrownRight > 0.1,
+      hold: 1,
+    },
     { name: 'focus',   when: s => s.stillness > 0.8,  hold: 5 },
     { name: 'nobody',  when: s => s.present < 0.2,    hold: 2 },
   ],
