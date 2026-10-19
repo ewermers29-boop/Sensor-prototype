@@ -9,6 +9,7 @@ Computer Coding Studio, fall 2026. The camera, the model, one worked signal and 
 1. Click **Use this template**, then **Create a new repository**, under one partner's account. Add the other partner as a collaborator (Settings, Collaborators).
 2. Both partners clone it, open it in VS Code, and run it with a local server. Live Server works, or in the terminal: `python3 -m http.server`, then open `http://localhost:8000`. Opening `index.html` straight from the Finder will not reach the camera.
 3. Turn on GitHub Pages: Settings, Pages, branch `main`, folder `/ (root)`. That address is the live URL you submit.
+   If an already-open page still shows an older version after publishing, hard-refresh it (Cmd+Shift+R on Mac).
 
 ## The files
 
